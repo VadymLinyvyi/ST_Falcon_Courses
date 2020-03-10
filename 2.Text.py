@@ -31,7 +31,7 @@ while len(shorttext+words[i]) < 120:
     shorttext += words[i]+" "
     i += 1
 
-while shorttext[-1] in {".", ",", ":", ";", "?", "!", " "}:
+while shorttext[-1] in {".", ",", ":", ";", "?", "!", " ", "-"}:
     shorttext = shorttext[:-1]
 
 print(shorttext+"...")
