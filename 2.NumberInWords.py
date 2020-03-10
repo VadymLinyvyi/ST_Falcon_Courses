@@ -34,6 +34,6 @@ if __name__ == '__main__':
     namespace = createParser().parse_args(sys.argv[1:])
     assert namespace.digit.isdigit() and 0 <= int(namespace.digit) < 10_000, "Очікується натуральне менше 10 000"
     if int(namespace.digit) == 0:
-        print ("нуль")
+        print("нуль")
     else:
         numToWord(int(namespace.digit))

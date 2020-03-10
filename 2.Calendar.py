@@ -7,6 +7,7 @@ import sys
 import argparse
 # Знаю, що є модуль calendar, але хотів написати сам
 
+
 def createParser():
     parser = argparse.ArgumentParser()
     parser.add_argument('date', nargs='?', default="02-07-2019")
