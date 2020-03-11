@@ -14,9 +14,16 @@ veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut 
 commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam
 nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
 """
+#texttmp -> text_tmp або text_input
+
 # Знаю, що костиль :)
 texttmp = (text.replace("...", ".").replace("!!!", ".").replace("???", ".").replace("!?", ".").replace("?!", ".").
            replace("!", ".").replace("?", "."))
+
+# Чи не ліпше буде спершу усі !, ?, перевести в . і після зробити replace("..", ".")
+#text2 = (text.replace('!', '.').replace('?', '.').replace('..', '.'))
+#if text2 == texttmp:
+#    print('eq')
 
 sentenses = texttmp.count(".")
 chars_with_spaces = len(text)
@@ -25,6 +32,8 @@ quises = text.lower().count("quis")
 words = text.split(" ")
 shorttext = ""
 i = 0
+
+# ми можемо просто зробити .replace("  ", " ") і після працювати з текстом без пробілів
 
 # Ігнорую випадок, коли в тексті є декілька пробілів підряд
 while len(shorttext+words[i]) < 120:

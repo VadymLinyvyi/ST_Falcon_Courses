@@ -1,16 +1,24 @@
+# Скоріш за все немає сенсу створювати окрему функцію для коду, 
+# котрий можна одразу передати в print() 
 # Переписати!!!
 def toFixed(numObj, digits=2):
     return f"{numObj:.{digits}f}"
 
+# гарною ідеєю було б створити окрему функцію для обчислення кожного завдання
 
 text = """Etiam in porta mauris, ut lacinia dui. Suspendisse maximus ipsum purus, vitae cursus mauris blandit eu. Integer tempor non neque eget eleifend. Morbi id nulla nec lectus lobortis imperdiet eget mollis enim. Donec sed quam a mi maximus suscipit lacinia vel sapien. Vivamus dolor nisl, interdum eget porttitor in, malesuada ut mi. Nam ac fermentum velit, non gravida sem. Nullam ante leo, volutpat vel sapien  nec,  dignissimfaucibus  lacus.  Proin  sed  ligula  vitae  est  porttitor  vulputate  convallis  sed  mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent viverra, ante eget ultricies venenatis, nulla mauris euismod velit, vitae pretium neque massa at nunc. Nullaid dictum nunc. Integer efficitur dictum  felis  sed  maximus.  Cras  ultrices  erat  vitae  mauris  rhoncus  blandit.  Morbi  ultrices  at  elit  vel dignissim. Etiam libero risus, mattis iaculis magna ac, egestas varius odio.Nam  viverra  quam  id  purus  pulvinar,  ac  interdum  diam  tincidunt.  In  pulvinar  nibh  sit  amet  purus dignissim, et porttitor libero dapibus. Nunc non nisi vel mi iaculis placerat. Proin porttitor sapien dui, at tempor dolor egestas ac. Phasellus eleifend tellus eu mauris dictum sollicitudin ac ut quam.Aliquam auctor erat vitae diam bibendum feugiat. Mauris ut dolor id ante feugiat lobortis. Duis in quam cursus, tincidunt lorem at, sagittis libero. Mauris tortor nisi, efficitur sit amet sapien sit amet, ultrices lacinia mi. Nulla  facilisi.  Nullam  laoreet  tortor id  ante  interdum,  non  tempus  ante  gravida.  Integer  nec  volutpat odio, vitae ullamcorper est. Etiam ligula dui, convallis et blandit vitae, varius vitae mauris. Mauris vitae pellentesque  justo,  a  ullamcorper  metus.  Maecenas  porttitor  massa  vitae  tortor  interdum,  aliquam rutrum tellus tincidunt.Sed vehicula felis a leo tempus, in fermentum turpis elementum. Pellentesque non sodales nulla, eget efficitur neque. In hac habitasse platea dictumst. Vivamus nec ultrices est. Fusce ac erat sed lectus egestas  consequat.  Sed  scelerisque  nisi  sem,  ut  dictum  diam  efficitur  laoreet.  Integer  aliquam  in mauris in varius. Sed eget tempus ex. Praesent nec neque eu erat dapibus lacinia id quis nulla.
 Praesent  quam  diam,  volutpat  at  velit  sed,  ultricies  tincidunt  nunc.  Etiam  metus  lorem,  rutrum  et sollicitudin eget, dictum feugiat augue. Sed quis libero at turpis lobortis gravida. Nunc congue eget ipsum eget euismod. Cras odio nulla, sollicitudin imperdiet diam vel, pellentesque congue nunc. Nunc a odio eu mauris blandit placerat at sit amet turpis. Donec eget mattis felis. Sed dui odio, tincidunt eget ullamcorper non, ornare eget libero. Morbi eu lorem bibendum, pharetra sem id, condimentum mauris. Integer  volutpat  pharetra  mauris  ut  hendrerit.  Interdum  et  malesuada  fames  ac  ante ipsum primis in faucibus."""
 
+#Чи треба нам робити копію тексту?
+# У нас text не змінюється
 textCopy = text
 
+# Чудовий вибір вивід зрозумілого повідомлення для користувача
 char = input("Введіть символ \n")
 assert len(char) == 1 and (65 <= ord(char) <= 90 or 97 <= ord(char) <= 122), "Очікується 1 літера латинського алфавіту"
 
+# цікавий підхід для зміни регістру
+# гарна ідея
 if 65 <= ord(char) <= 90:
     char = chr(ord(char) + 32)
 
@@ -19,6 +27,7 @@ word = ""
 words = []
 
 for s in text:
+    # ми можемо вивести список стоп символів за межі циклу
     if s in {" ", "!", "?", ",", ".", "\n"}:
         if word != "":
             # case insensitive
@@ -28,11 +37,13 @@ for s in text:
             word = ""
     else:
         word += s
+
 if word != "":
     words.append(word)
     word = ""
 
 minLenWord = len(words[0])
+# непогана ідея з використанням масиву для підрахунку символів
 firstLetterFrequency = [0] * 26
 
 for w in words:
@@ -59,6 +70,8 @@ for i in range(len(firstLetterFrequency)):
 editedText = []
 for s in textCopy:
     if s in {" ", "\n"}:
+        # ми можемо використовувати len(word)
+        # але цей варіант теж вірний
         if word != "":
             word += s
             editedText.append(word)
@@ -74,6 +87,8 @@ halfText = editedText[0]
 for i in range(1, len(editedText), 2):
     halfText += editedText[i]
 
+# Останнє слово залишилось, але в кінець було додано слово з початку
+# Можна спробувати написати len(editedText) - 1
 # Поміняти місцями перше й останнє слово
 swingWords = editedText[-1]
 for i in range(1, len(editedText)):
