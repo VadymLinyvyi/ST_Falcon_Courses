@@ -56,6 +56,7 @@ for i in range(len(firstLetterFrequency)):
 
 # Формуємо текст, де відсутні слова з парним індексом
 # В даному випадку, вважаю розділові знаки частиною слова (видаляються разом з словом)
+# Формую масив слів, Case sensitive
 editedText = []
 for s in textCopy:
     if s in {" ", "\n"}:
