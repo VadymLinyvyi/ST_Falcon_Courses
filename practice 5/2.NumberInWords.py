@@ -21,11 +21,18 @@ words = [[None],
          ["", "сто", "двісті", "триста", "чотириста", "п'ятсот", "шістсот", "сімсот", "вісімсот", "дев'ятсот"],
          ["", "тисяча", "дві тисячі", "три тисячі", "чотири тисячі", "п'ять тисяч", "шість тисяч", "сім тисяч", "вісім тисяч", "дев'ять тисяч"]]
 
-
+# Гарна ідея використати рекурсію
 def numToWord (number: int):
+    # цікавий підхід з числами від 1 до 19
     if number < 20:
         print(words[1][number])
     else:
+        # гадаю ліпше винести операції з number на за межі print, бо код є перевантажений логікою
+        #strNumber = str(number)
+        # i = len(strNumber)
+        # j = int(strNumber[0])
+        #print(worlds[i][j], end=" ")
+        #numToWorld(int(strNumber[1:]))
         print(words[len(str(number))][int(str(number)[0])], end=" ")
         numToWord(int(str(number)[1:]))
 
