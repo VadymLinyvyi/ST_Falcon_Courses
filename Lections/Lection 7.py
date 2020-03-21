@@ -1,4 +1,4 @@
-with open ("text.txt", "w+", encoding="utf-8") as file:
+with open("text.txt", "w+", encoding="utf-8") as file:
     file.write("first line ")
     file.write("second\n")
     file.writelines("""contains two
