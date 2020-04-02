@@ -2,13 +2,36 @@ class TOKEN_TYPE:
     OPERATOR = 0
     STRING = 1
     NUMBER = 2
+    BOOLEAN = 3
+    NULL = 4
 
 
 class __TOKENIZER_STATE:
     WHITESPACE = 0
-    INTEGER = 1
-    STRING = 2
-    STRING_END = 3
+    INTEGER_0 = 1
+    INTEGER_SIGN = 2
+    INTEGER = 3
+    INTEGER_EXP = 4
+    INTEGER_EXP_0 = 5
+    FLOATING_POINT_0 = 6
+    FLOATING_POINT = 8
+    STRING = 9
+    STRING_ESCAPE = 10
+    STRING_END = 11
+    TRUE_1 = 12
+    TRUE_2 = 13
+    TRUE_3 = 14
+    FALSE_1 = 15
+    FALSE_2 = 16
+    FALSE_3 = 17
+    FALSE_4 = 18
+    NULL_1 = 19
+    NULL_2 = 20
+    NULL_3 = 21
+    UNICODE_1 = 22
+    UNICODE_2 = 23
+    UNICODE_3 = 24
+    UNICODE_4 = 25
 
 
 def tokenize(stream):
@@ -16,76 +39,293 @@ def tokenize(stream):
         return char.isspace() or char in "{}[]:,"
 
     token = []
+    charcode = 0
     completed = False
-    new_token = ""
+    now_token = ""
 
-    def process_char(char):
-        nonlocal token, completed, new_token
+    def process_char(char, charcode):
+        nonlocal token, completed, now_token
         advance = True
         add_char = False
         next_state = state
         if state == __TOKENIZER_STATE.WHITESPACE:
             if char == "{":
                 completed = True
-                new_token = (TOKEN_TYPE.OPERATOR, "{")
+                now_token = (TOKEN_TYPE.OPERATOR, "{")
             elif char == "}":
                 completed = True
-                new_token = (TOKEN_TYPE.OPERATOR, "}")
+                now_token = (TOKEN_TYPE.OPERATOR, "}")
             elif char == "[":
                 completed = True
-                new_token = (TOKEN_TYPE.OPERATOR, "[")
+                now_token = (TOKEN_TYPE.OPERATOR, "[")
             elif char == "]":
                 completed = True
-                new_token = (TOKEN_TYPE.OPERATOR, "]")
+                now_token = (TOKEN_TYPE.OPERATOR, "]")
             elif char == ",":
                 completed = True
-                new_token = (TOKEN_TYPE.OPERATOR, ",")
+                now_token = (TOKEN_TYPE.OPERATOR, ",")
             elif char == ":":
                 completed = True
-                new_token = (TOKEN_TYPE.OPERATOR, ":")
+                now_token = (TOKEN_TYPE.OPERATOR, ":")
             elif char == "\"":
                 next_state = __TOKENIZER_STATE.STRING
-            elif char in "0123456789":
+            elif char in "123456789":
                 next_state = __TOKENIZER_STATE.INTEGER
                 add_char = True
+            elif char == "0":
+                next_state = __TOKENIZER_STATE.INTEGER_0
+                add_char = True
+            elif char == "-":
+                next_state = __TOKENIZER_STATE.INTEGER_SIGN
+                add_char = True
+            elif char == "f":
+                next_state = __TOKENIZER_STATE.FALSE_1
+            elif char == "t":
+                next_state = __TOKENIZER_STATE.TRUE_1
+            elif char == "n":
+                next_state = __TOKENIZER_STATE.NULL_1
+            elif not char.isspace():
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
         elif state == __TOKENIZER_STATE.INTEGER:
             if char in "0123456789":
+                add_char = True
+            elif char == ".":
+                next_state = __TOKENIZER_STATE.FLOATING_POINT_0
+                add_char = True
+            elif char == "e" or char == 'E':
+                next_state = __TOKENIZER_STATE.INTEGER_EXP_0
                 add_char = True
             elif is_delimiter(char):
                 next_state = __TOKENIZER_STATE.WHITESPACE
                 completed = True
-                new_token = (TOKEN_TYPE.NUMBER, int("".join(token)))
+                now_token = (TOKEN_TYPE.NUMBER, int("".join(token)))
                 advance = False
+            else:
+                raise ValueError("A number must contain only digits.  Got '{}'".format(char))
+        elif state == __TOKENIZER_STATE.INTEGER_0:
+            if char == ".":
+                next_state = __TOKENIZER_STATE.FLOATING_POINT_0
+                add_char = True
+            elif char == "e" or char == 'E':
+                next_state = __TOKENIZER_STATE.INTEGER_EXP_0
+                add_char = True
+            elif is_delimiter(char):
+                next_state = __TOKENIZER_STATE.WHITESPACE
+                completed = True
+                now_token = (TOKEN_TYPE.NUMBER, 0)
+                advance = False
+            else:
+                raise ValueError("A 0 must be followed by a '.' or a 'e'.  Got '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.INTEGER_SIGN:
+            if char == "0":
+                next_state = __TOKENIZER_STATE.INTEGER_0
+                add_char = True
+            elif char in "123456789":
+                next_state = __TOKENIZER_STATE.INTEGER
+                add_char = True
+            else:
+                raise ValueError("A - must be followed by a digit.  Got '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.INTEGER_EXP_0:
+            if char == "+" or char == "-" or char in "0123456789":
+                next_state = __TOKENIZER_STATE.INTEGER_EXP
+                add_char = True
+            else:
+                raise ValueError("An e in a number must be followed by a '+', '-' or digit.  Got '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.INTEGER_EXP:
+            if char in "0123456789":
+                add_char = True
+            elif is_delimiter(char):
+                completed = True
+                now_token = (TOKEN_TYPE.NUMBER, float("".join(token)))
+                next_state = __TOKENIZER_STATE.WHITESPACE
+                advance = False
+            else:
+                raise ValueError("A number exponent must consist only of digits.  Got '{}'".format(char))
+        elif state == __TOKENIZER_STATE.FLOATING_POINT:
+            if char in "0123456789":
+                add_char = True
+            elif char == "e" or char == "E":
+                next_state = __TOKENIZER_STATE.INTEGER_EXP_0
+                add_char = True
+            elif is_delimiter(char):
+                completed = True
+                now_token = (TOKEN_TYPE.NUMBER, float("".join(token)))
+                next_state = __TOKENIZER_STATE.WHITESPACE
+                advance = False
+            else:
+                raise ValueError("A number must include only digits")
+        elif state == __TOKENIZER_STATE.FLOATING_POINT_0:
+            if char in "0123456789":
+                next_state = __TOKENIZER_STATE.FLOATING_POINT
+                add_char = True
+            else:
+                raise ValueError("A number with a decimal point must be followed by a fractional part")
+        elif state == __TOKENIZER_STATE.FALSE_1:
+            if char == "a":
+                next_state = __TOKENIZER_STATE.FALSE_2
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.FALSE_2:
+            if char == "l":
+                next_state = __TOKENIZER_STATE.FALSE_3
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.FALSE_3:
+            if char == "s":
+                next_state = __TOKENIZER_STATE.FALSE_4
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.FALSE_4:
+            if char == "e":
+                next_state = __TOKENIZER_STATE.WHITESPACE
+                completed = True
+                now_token = (TOKEN_TYPE.BOOLEAN, False)
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.TRUE_1:
+            if char == "r":
+                next_state = __TOKENIZER_STATE.TRUE_2
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.TRUE_2:
+            if char == "u":
+                next_state = __TOKENIZER_STATE.TRUE_3
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.TRUE_3:
+            if char == "e":
+                next_state = __TOKENIZER_STATE.WHITESPACE
+                completed = True
+                now_token = (TOKEN_TYPE.BOOLEAN, True)
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.NULL_1:
+            if char == "u":
+                next_state = __TOKENIZER_STATE.NULL_2
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.NULL_2:
+            if char == "l":
+                next_state = __TOKENIZER_STATE.NULL_3
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
+        elif state == __TOKENIZER_STATE.NULL_3:
+            if char == "l":
+                next_state = __TOKENIZER_STATE.WHITESPACE
+                completed = True
+                now_token = (TOKEN_TYPE.NULL, None)
+            else:
+                raise ValueError("Invalid JSON character: '{0}'".format(char))
         elif state == __TOKENIZER_STATE.STRING:
             if char == "\"":
                 completed = True
-                new_token = (TOKEN_TYPE.STRING, "".join(token))
+                now_token = (TOKEN_TYPE.STRING, "".join(token))
                 next_state = __TOKENIZER_STATE.STRING_END
+            elif char == "\\":
+                next_state = __TOKENIZER_STATE.STRING_ESCAPE
             else:
                 add_char = True
         elif state == __TOKENIZER_STATE.STRING_END:
             if is_delimiter(char):
                 advance = False
                 next_state = __TOKENIZER_STATE.WHITESPACE
+            else:
+                raise ValueError("Expected whitespace or an operator after strin.  Got '{}'".format(char))
+        elif state == __TOKENIZER_STATE.STRING_ESCAPE:
+            next_state = __TOKENIZER_STATE.STRING
+            if char == "\\" or char == "\"":
+                add_char = True
+            elif char == "b":
+                char = "\b"
+                add_char = True
+            elif char == "f":
+                char = "\f"
+                add_char = True
+            elif char == "n":
+                char = "\n"
+                add_char = True
+            elif char == "t":
+                char = "\t"
+                add_char = True
+            elif char == "r":
+                char = "\r"
+                add_char = True
+            elif char == "/":
+                char = "/"
+                add_char = True
+            elif char == "u":
+                next_state = __TOKENIZER_STATE.UNICODE_1
+                charcode = 0
+            else:
+                raise ValueError("Invalid string escape: {}".format(char))
+        elif state == __TOKENIZER_STATE.UNICODE_1:
+            if char in "0123456789":
+                charcode = (ord(char) - 48) * 4096
+            elif char in "abcdef":
+                charcode = (ord(char) - 87) * 4096
+            elif char in "ABCDEF":
+                charcode = (ord(char) - 55) * 4096
+            else:
+                raise ValueError("Invalid character code: {}".format(char))
+            next_state = __TOKENIZER_STATE.UNICODE_2
+            char = ""
+        elif state == __TOKENIZER_STATE.UNICODE_2:
+            if char in "0123456789":
+                charcode += (ord(char) - 48) * 256
+            elif char in "abcdef":
+                charcode += (ord(char) - 87) * 256
+            elif char in "ABCDEF":
+                charcode += (ord(char) - 55) * 256
+            else:
+                raise ValueError("Invalid character code: {}".format(char))
+            next_state = __TOKENIZER_STATE.UNICODE_3
+            char = ""
+        elif state == __TOKENIZER_STATE.UNICODE_3:
+            if char in "0123456789":
+                charcode += (ord(char) - 48) * 16
+            elif char in "abcdef":
+                charcode += (ord(char) - 87) * 16
+            elif char in "ABCDEF":
+                charcode += (ord(char) - 55) * 16
+            else:
+                raise ValueError("Invalid character code: {}".format(char))
+            next_state = __TOKENIZER_STATE.UNICODE_4
+            char = ""
+        elif state == __TOKENIZER_STATE.UNICODE_4:
+            if char in "0123456789":
+                charcode += ord(char) - 48
+            elif char in "abcdef":
+                charcode += ord(char) - 87
+            elif char in "ABCDEF":
+                charcode += ord(char) - 55
+            else:
+                raise ValueError("Invalid character code: {}".format(char))
+            next_state = __TOKENIZER_STATE.STRING
+            char = chr(charcode)
+            add_char = True
+
         if add_char:
             token.append(char)
 
-        return advance, next_state
-
+        return advance, next_state, charcode
     state = __TOKENIZER_STATE.WHITESPACE
     char = stream.read(1)
     index = 0
     while char:
-        advance, state = process_char(char)
+        try:
+            advance, state, charcode = process_char(char, charcode)
+        except ValueError as e:
+            raise ValueError("".join([e.args[0], " at index {}".format(index)]))
         if completed:
             completed = False
             token = []
-            yield new_token
+            yield now_token
         if advance:
             char = stream.read(1)
             index += 1
+    process_char(" ", charcode)
     if completed:
-        yield new_token
+        yield now_token
 
 
 def parse(file):
@@ -97,6 +337,7 @@ def parse(file):
         next(token_stream)
     except StopIteration:
         return val
+    raise ValueError("Additional string after end of JSON")
 
 
 def __parse(token_stream, first_token):
@@ -119,6 +360,10 @@ def __parse(token_stream, first_token):
             stack.append({})
         elif token == "[":
             stack.append([])
+        else:
+            raise ValueError("Expected object or array.  Got '{}'".format(token))
+    else:
+        raise ValueError("Expected object or array.  Got '{}'".format(token))
 
     last_type, last_token = token_type, token
     try:
@@ -287,210 +532,3 @@ def __parse(token_stream, first_token):
             return stack[0], None, None
         else:
             raise ValueError("JSON Object not properly closed") from e
-
-
-def wait():
-    while True:
-        if input("\n\n[0] Повернутись назад\n") == "0":
-            return
-
-
-def wait_pagination():
-    while True:
-        command = input("\n\n[1] Наступна сторінка\n"
-                            "[0] Повернутись назад\n")
-        if command == "0":
-            return 0
-        elif command == "1":
-            return 1
-        else:
-            print("Некоректна команда")
-
-
-def get_brands(cars: set):
-    brands = set()
-    for car in cars:
-        brands.add(car.get("Make"))
-    return brands
-
-
-def print_all_items(cars: list):
-    keys = cars[0].keys()
-    for car in cars:
-        print("+=========================================================+")
-        for key in keys:
-            print("\t{}: {}".format(key, car.get(key)))
-
-
-def generator(cars):
-    for car in cars:
-        yield car
-
-
-def paginated_print(cars, pagination):
-    gen = generator(cars)
-    keys = cars[0].keys()
-    while True:
-        for i in range(pagination):
-            try:
-                car = next(gen)
-            except StopIteration:
-                return
-            print("+=========================================================+")
-            for key in keys:
-                print("\t{}: {}".format(key, car.get(key)))
-        if wait_pagination() == 0:
-            return
-
-
-def print_brands(cars: set):
-    brands = get_brands(cars)
-    for brand in brands:
-        print(brand)
-
-
-def filter_by_brand(cars, brand):
-    filtered_cars = []
-    brand = brand.lower()
-    for car in cars:
-        tmp_brand = str(car["Make"]).lower()
-        if brand in tmp_brand:
-            filtered_cars.append(car)
-    return filtered_cars
-
-
-def filter_by_model(car, model):
-    filtered_cars = []
-    model = model.lower()
-    for car in cars:
-        tmp_model = str(car["Model"]).lower()
-        if model in tmp_model:
-            filtered_cars.append(car)
-    return filtered_cars
-
-
-def filter_by_years(cars, min_year, max_year):
-    if not (min_year.isdigit() and max_year.isdigit()):
-        print("Некоректний запит")
-    else:
-        filtered_cars = []
-        max_year, min_year = max(int(max_year), int(min_year)), min(int(max_year), int(min_year))
-        for car in cars:
-            if min_year <= car.get("Year") <= max_year:
-                filtered_cars.append(car)
-        return filtered_cars
-
-
-def sort(cars, key, direction, enabled):
-    if not enabled:
-        return cars
-    # Пишу після роботи втомлений... нема сил на нормальний алгоритм сортування
-    for i in range(len(cars)):
-        for j in range(len(cars)):
-            if (cars[i][key] < cars[j][key] and direction) or (cars[i][key] > cars[j][key] and not direction):
-                cars[i], cars[j] = cars[j], cars[i]
-    return cars
-
-
-with open("Car_Model_List.json", "r") as file:
-    cars = parse(file)
-pagination = 5
-sort_enabled = False
-sorting_key = "Year"
-sorting_direction = True
-while True:
-    print("Виберіть пункт меню:")
-    print("\t[1] Вивести повну інформацію про всі авто")
-    print("\t[2] Вивести список доступних брендів")
-    print("\t[3] Вивести список моделей вказаного бренду")
-    print("\t[4] Вивести усі моделі виробника за вказаний проміжок часу")
-    print("\t[5] Вивести доступні авто вказаної моделі")
-
-    print("\t[9] Налаштування")
-    print("\t[0] Вихід")
-    command = input()
-    if command == "0":
-        break
-    elif command == "9":
-        while True:
-            print("\t\t[1] Змінити кількість авто на сторінку")
-            print("\t\t[2] Налаштування сортування")
-            print("\t\t[0] Назад")
-            command2 = input()
-            if command2 == "0":
-                break
-            elif command2 == "1":
-                pagination = int(input("\t\t\t Введіть кількість авто на сторінку. Поточне значення = {}\n"
-                                       "\t\t\t* При введенні нуля виводимуться усі авто\n".format(pagination)))
-            elif command2 == "2":
-                while True:
-                    print("\t\t\t[1] Ввімкнути/вимкнути сортування. Поточний стан - {}".format("ввімкнуто" if sort_enabled
-                                                                                               else "вимкнуто"))
-                    print("\t\t\t[2] Змінити ключ сортування. Поточне значення - {}".format(sorting_key))
-                    print("\t\t\t[3] Змінити напрямок сортування. Поточне значення - {}".format("А-я" if sorting_direction
-                                                                                            else "я-А"))
-                    print("\t\t\t[0] Назад")
-                    command3 = input()
-                    if command3 == "0":
-                        break
-                    elif command3 == "1":
-                        sort_enabled = not sort_enabled
-                    elif command3 == "2":
-                        while True:
-                            print("\t\t\t\t[1] Сортувати за роком випуску")
-                            print("\t\t\t\t[2] Сортувати за назвою моделі")
-                            print("\t\t\t\t[3] Сортувати за виробником")
-                            print("\t\t\t\t[0] Назад")
-                            command4 = input()
-                            if command4 == "0":
-                                break
-                            elif command4 == "1":
-                                sorting_key = "Year"
-                            elif command4 == "2":
-                                sorting_key = "Model"
-                            elif command4 == "3":
-                                sorting_key = "Make"
-                            else:
-                                print("Некоректна команда")
-                    elif command3 == "3":
-                        sorting_direction = not sorting_direction
-                    else:
-                        print("Некоректна команда")
-            else:
-                print("Некоректна команда")
-    elif command == "1":
-        if pagination == 0:
-            print_all_items(sort(cars, sorting_key, sorting_direction, sort_enabled))
-            wait()
-        else:
-            paginated_print(sort(cars, sorting_key, sorting_direction, sort_enabled), pagination)
-    elif command == "2":
-        print_brands(cars)
-        wait()
-    elif command == "3":
-        brand = input("Введіть назву бренда\n")
-        if pagination == 0:
-            print_all_items(filter_by_brand(sort(cars, sorting_key, sorting_direction, sort_enabled), brand))
-            wait()
-        else:
-            paginated_print(filter_by_brand(sort(cars, sorting_key, sorting_direction, sort_enabled), brand), pagination)
-    elif command == "4":
-        brand = input("Введіть назву бренда\n")
-        min_year = input("Введіть мінімальний рік випуску (yyyy)\n")
-        max_year = input("Введіть максимальний рік випуску (yyyy)\n")
-        if pagination == 0:
-            print_all_items(sort(filter_by_brand(filter_by_years(cars, min_year, max_year), brand),
-                                 sorting_key, sorting_direction, sort_enabled))
-            wait()
-        else:
-            paginated_print(sort(filter_by_brand(filter_by_years(cars, min_year, max_year), brand),
-                                 sorting_key, sorting_direction, sort_enabled), pagination)
-    elif command == "5":
-        model = input("Введіть назву моделі\n")
-        if pagination == 0:
-            print_all_items(filter_by_model(sort(cars, sorting_key, sorting_direction, sort_enabled), model))
-            wait()
-        else:
-            paginated_print(filter_by_model(sort(cars, sorting_key, sorting_direction, sort_enabled), model), pagination)
-    else:
-        print("Некоректна команда")
