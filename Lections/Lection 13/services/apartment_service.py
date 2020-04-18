@@ -20,8 +20,6 @@ class Apartment_service():
         apartment.description = get_string("Please, enter apt description: ")
         apartment.price = get_price("Please, enter apt price: ")
 
-        print(Apartment.price.min_value)
-
         apartment.save()
 
         print("Apartment saved")

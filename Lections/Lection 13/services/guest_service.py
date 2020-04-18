@@ -5,6 +5,15 @@ from helpers.output_helper import pretty_print
 
 
 class Guest_service():
+    def search_guest(self):
+        name = get_string("Please, enter guest name: ")
+
+        guest = Guest.objects().filter(name__icontains=name)
+
+        columns = ('Name', 'Age', 'Is_card')
+        pretty_print(guest, columns)
+        return guest
+
     def guest_list(self):
         print("Guest List")
         guests = Guest.objects()
@@ -23,3 +32,4 @@ class Guest_service():
         guest.save()
         
         print(Fore.GREEN, "Guest added", Fore.RESET)
+        return guest

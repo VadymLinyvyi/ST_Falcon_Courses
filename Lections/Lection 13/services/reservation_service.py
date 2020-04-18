@@ -3,7 +3,7 @@ from helpers.output_helper import pretty_print
 from models.reservations import Reservation
 from helpers.input_helper import get_int, get_date
 import datetime
-from services import Apartment_service
+from services import Apartment_service, Guest_service
 
 
 class Reservation_service():
@@ -38,8 +38,18 @@ class Reservation_service():
 
         apartment = apartments[rowIdx]
 
+        Guests = Guest_service()
+        guests = Guests.search_guest()
+
+        if guests is None or len(guests) == 0:
+            guest = Guests.add_guest()
+        else:
+            rowId = get_int("Please, select guest number: ", 1, len(guests))-1
+            guest = guests[rowId]
+
         reservation = Reservation()
 
+        reservation.guest_id = guest.id
         reservation.booked_date = datetime.datetime.now()
         reservation.check_in_date = get_date("Please, enter check in date: ")
         reservation.check_out_date = get_date("Please, enter check out date: ")

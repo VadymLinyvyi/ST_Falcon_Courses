@@ -2,6 +2,8 @@ import datetime
 
 from colorama import Fore
 
+from models.apartments import Apartment
+
 
 def get_string(message):
     styled_message = "{}{}{}".format(Fore.BLUE, message, Fore.RESET)
@@ -19,7 +21,10 @@ def get_price(message):
 
         try:
             number = float(str_number)
-            return number
+            if number >= Apartment.price.min_value:
+                return number
+            else:
+                print("Minimal price is {}".format(Apartment.price.min_value))
         except:
             print(Fore.YELLOW + "Please, enter number value" + Fore.RESET)
 
