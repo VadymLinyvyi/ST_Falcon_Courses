@@ -63,4 +63,3 @@ class Reservation_service():
         print("{} Booking duration is {} day(s).{}".format(Fore.BLUE, reservation.duration, Fore.RESET))
 
         print(Fore.GREEN, "Reservation made successfully", Fore.RESET)
-
