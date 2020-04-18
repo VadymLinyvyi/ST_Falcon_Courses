@@ -8,9 +8,16 @@ from services import Apartment_service
 
 class Reservation_service():
     def reservation_list(self):
-        apartments = Apartment_service()
-        apartments.apartments_list()
-        apartment = apartments.search_apartment()
+        Apartments = Apartment_service()
+        apartments = Apartments.search_apartment()
+
+        if apartments is None or len(apartments) == 0:
+            print(Fore.YELLOW, "Apartments not found", Fore.RESET)
+            return
+
+        rowIdx = get_int("Please, select apt number: ", 1, len(apartments))-1
+
+        apartment = apartments[rowIdx]
         reservations = apartment.reservations
         columns = ('Check_in_date', 'Check_out_date', 'Booked_date')
         pretty_print(reservations, columns)
