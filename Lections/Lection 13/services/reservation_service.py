@@ -7,6 +7,30 @@ from services import Apartment_service, Guest_service
 
 
 class Reservation_service():
+#    def reservation_list_filter_select(self):
+#        print("Filter by [a]partment")
+#        print("Filter by [g]uest")
+#        command = input(Fore.YELLOW+">"+Fore.RESET)
+#        if command.strip().lower() == 'a':
+#            Reservation_service.reservation_list()
+#        elif command.strip().lower() == 'g':
+#            Reservation_service.reservation_list_filtered_by_guest()
+#        else:
+#            print("Unknown command")
+
+#    def reservation_list_filtered_by_guest(self):
+#        guests = Guest_service.search_guest()
+#        if guests is None or len(guests) == 0:
+#            print(Fore.YELLOW, "Guests not found", Fore.RESET)
+#            return
+#        rowIdx = get_int("Please, select guest name: ", 1, len(guests))-1
+
+#        guest = guests[rowIdx]
+#        guest_id = guest.id
+
+
+
+
     def reservation_list(self):
         Apartments = Apartment_service()
         apartments = Apartments.search_apartment()
@@ -53,6 +77,10 @@ class Reservation_service():
         reservation.booked_date = datetime.datetime.now()
         reservation.check_in_date = get_date("Please, enter check in date: ")
         reservation.check_out_date = get_date("Please, enter check out date: ")
+
+        if reservation.check_in_date > reservation.check_out_date:
+            print("Check out date must be later than the check in date")
+            return
 
         apartment.reservations.append(reservation)
 
