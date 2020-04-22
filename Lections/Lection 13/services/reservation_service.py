@@ -28,13 +28,12 @@ class Reservation_service():
             return
         rowIdx = get_int("Please, select guest name: ", 1, len(guests))-1
         result = []
-        data = {}
+
         guest = guests[rowIdx]
         columns = ('Check_in_date', 'Check_out_date', 'Booked_date')
         reservations = Apartment.objects(reservations__guest=guest).all()
         for apts in reservations:
-#            data = apts.reservations[0]
-#            data.update("Apartment":apts.name)
+            data = {}
             data['apartment'] = apts.name
             for cell in columns:
                 data[cell.lower()] = apts.reservations[0][cell.lower()]
