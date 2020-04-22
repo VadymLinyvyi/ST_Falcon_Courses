@@ -22,7 +22,7 @@ def main():
             s.case('s', apartments.search_apartment)
             s.case('v', guests.guest_list)
             s.case('g', guests.add_guest)
-            s.case('b', reservations.reservation_list)
+            s.case('b', reservations.reservation_list_filter_select)
             s.case('m', reservations.add_reservation)
             s.case('?', commands)
             s.case('e', exit)
