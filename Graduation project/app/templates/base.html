@@ -3,14 +3,23 @@
         {% if title %}
         <title>{{ title }} "Роги і Копита"</title>
         {% else %}
-        <title>Вітаємо на сайті автосервісу "Роги і копита"</title>
+        <title>"Роги і копита"</title>
         {% endif %}
     </head>
     <body>
         <div>
-            {% block menu %}{% endblock %}
+            {{nav.main_menu_bar.render()}}
         </div>
         <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
         <div>
             {% block content %}{% endblock %}
         </div>
