@@ -2,7 +2,7 @@ Refactoring
 
 export FLASK_DEBUG=0
 
-py -m pip install -r requerements.txt
+py -m pip install -r requirements.txt
 
 py -m flask db init
 py -m flask db migrate

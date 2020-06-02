@@ -8,12 +8,11 @@
     </head>
     <body>
         <div>
-            <a href="/index">Автосервіс "Роги і копита"</a>
-            Про компанію
-            Автосервіс
-            Прес-центр
+            {% block menu %}{% endblock %}
         </div>
         <hr>
-        {% block content %}{% endblock %}
+        <div>
+            {% block content %}{% endblock %}
+        </div>
     </body>
 </html>
