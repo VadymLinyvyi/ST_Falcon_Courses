@@ -53,3 +53,8 @@ class Guest_service():
         guest.age = int(data['age'])
         guest.is_card = bool(data['is_card'])
         guest.save()
+
+    def remove_guest(self, name, last_name, age):
+        print("removed")
+        guests = Guest.objects.filter(name__icontains=name, last_name__icontains=last_name, age__icontains=int(age))
+        guests.delete()

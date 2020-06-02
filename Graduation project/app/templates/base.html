@@ -1,0 +1,19 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} "Роги і Копита"</title>
+        {% else %}
+        <title>Вітаємо на сайті автосервісу "Роги і копита"</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>
+            <a href="/index">Автосервіс "Роги і копита"</a>
+            Про компанію
+            Автосервіс
+            Прес-центр
+        </div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>

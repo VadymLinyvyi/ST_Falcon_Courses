@@ -50,7 +50,9 @@ class GuestTableModel(QtCore.QAbstractTableModel):
     def removeRow(self, row_id):
         self.beginResetModel()
         name = self.guests_data[row_id]['name']
-        self.service.remove_guest(name)
-        self.guests_data = self.service.guests_list()
+        last_name = self.guests_data[row_id]['last_name']
+        age = self.guests_data[row_id]['age']
+        self.service.remove_guest(name, last_name, age)
+        self.guests_data = self.service.guest_list()
         self.endResetModel()
         return True

@@ -71,10 +71,10 @@ class Reservation_service():
 
     def add_reservation(self, data):
         Apartments = Apartment_service()
-        apartment = Apartments.search_apartment(data['name'])[0]
+        apartment = Apartments.search_apartment(data['name']).first()
 
         Guests = Guest_service()
-        guest = Guests.search_guest(data["guest_name"], data["guest_last_name"], data["guest_age"])
+        guest = Guests.search_guest(data["guest_name"], data["guest_last_name"], data["guest_age"]).first()
 
         reservation = Reservation()
         reservation.guest = guest

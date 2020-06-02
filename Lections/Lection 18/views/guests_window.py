@@ -104,7 +104,7 @@ class GuestsWindow(QMdiSubWindow):
         self.name_field.setText(row['name'])
         self.last_name_field.setText(row['last_name'])
         self.age_field.setText(str(row['age']))
-        self.card_field.setText(row['is_card'])
+        self.card_field.setText(str(row['is_card']))
 
     @Slot()
     def RemoveRow(self):

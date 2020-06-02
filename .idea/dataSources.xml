@@ -7,5 +7,17 @@
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
       <jdbc-url>mongodb://localhost:27017</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="app" uuid="9539ec1d-dded-43d0-b178-a825eebab9d4">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\ST_Falcon_Courses\Lections\Lection 22\demo-4\app.db</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="app [2]" uuid="cbe1ceda-d1da-44ef-a2eb-ad8c8c99c050">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\ST_Falcon_Courses\Lections\Lection 22\demo-5\app.db</jdbc-url>
+    </data-source>
   </component>
 </project>
