@@ -1,3 +1,3 @@
 FLASK_APP = entry.py
-DEBUG = True
+DEBUG = False
 FLASK_ENV=development

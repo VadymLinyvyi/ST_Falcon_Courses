@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
     <h1>Авторизація</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
@@ -22,4 +22,8 @@
         <p>{{ form.submit() }}</p>
     </form>
     <p>Новий користувач? <a href="{{ url_for('register') }}">Зареєструватись!</a></p>
+    <p>
+        Забули пароль?
+        <a href="{{ url_for('reset_password_request') }}">ТИЦЬ! Щоб відновити</a>
+    </p>
 {% endblock %}
