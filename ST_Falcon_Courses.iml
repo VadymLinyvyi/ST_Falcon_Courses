@@ -5,6 +5,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/Graduation project" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Graduation_project" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Lections/Lection 22/demo-5" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -13,7 +14,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/Graduation_project/app/templates" />
+        <option value="$MODULE_DIR$/Graduation project/app/templates" />
       </list>
     </option>
   </component>
