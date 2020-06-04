@@ -18,4 +18,10 @@
             {% include '_post.html' %}
         </p>
     {% endfor %}
+    {% if prev_url %}
+        <a href="{{ prev_url }}">Наступні</a>
+    {% endif %}
+    {% if next_url %}
+        <a href="{{ next_url }}">Попередні</a>
+    {% endif %}
 {% endblock %}
