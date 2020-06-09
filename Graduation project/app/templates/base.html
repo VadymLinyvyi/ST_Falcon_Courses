@@ -1,11 +1,17 @@
 {% extends 'bootstrap/base.html' %}
 
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+    {{ moment.lang('uk') }}
+{% endblock %}
+
 {% block title %}
-        {% if title %}
+    {% if title %}
         {{ title }} "Роги і Копита"
-        {% else %}
+    {% else %}
         "Роги і копита"
-        {% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block navbar %}
@@ -18,7 +24,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url_for('index') }}">Автосервіс</a>
+                <a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/logo.png') }}" width="35" height="35" alt="Автосервіс"/></a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
@@ -39,17 +45,17 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-info" role="alert">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info" role="alert">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-    {# application content needs to be provided in the app_content block #}
-    {% block app_content %}{% endblock %}
-</div>
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
 {% endblock %}
 
